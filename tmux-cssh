@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 THIS_BASENAME=$(basename "$0")
-TMUX_SESSION_NAME="tmux-cssh"
+TMUX_SESSION_NAME="tmux-cssh-$(date +%s)"
 HOSTS=""
 USER=""
 IDENTITY=""
 FILENAME=""
 SSH_COMMAND="ssh"
 SSH_ARGS=""
-SYNCHRONIZE_PANES="true"
+SYNCHRONIZE_PANES="false"
 TMUX_LAYOUT="tiled"
 
 # Config-file in home directory
