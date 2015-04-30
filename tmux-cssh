@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 THIS_BASENAME=$(basename "$0")
-TMUX_SESSION_NAME="tmux-cssh-$(date +%s)"
+# TMUX_SESSION_NAME="tmux-cssh-$(date +%s)"
+TMUX_SESSION_NAME="$(tmux display-message -p '#S')"
 HOSTS=""
 USER=""
 IDENTITY=""
@@ -225,8 +226,8 @@ if (( $(tmux ls 2> /dev/null | grep "${TMUX_SESSION_NAME}" | wc -l) > 0 )) ; the
 	synchronizePanes ${SYNCHRONIZE_PANES} ${TMUX_SESSION_NAME}
 
 	# Attach to available tmux-session
-	tmux attach -t "${TMUX_SESSION_NAME}"
-	exit
+	# tmux attach -t "${TMUX_SESSION_NAME}"
+	# exit
 fi
 
 # Hosts available ?
@@ -244,6 +245,7 @@ initTmuxCall="true"
 IFS=","
 
 for host in ${HOSTS[@]}; do
+    echo "hi"
 	connectString=""
 	hostname=""
 	port=""
@@ -286,19 +288,8 @@ for host in ${HOSTS[@]}; do
 	# Output
 	output "* Connecting '${connectString}'"
 
-	# First Call, inits the tmux-session
-	if [ "${initTmuxCall}" == "true" ]; then
-		tmux new-session -d -s "${TMUX_SESSION_NAME}" "${connectString}"
-
-    # If our initial ssh connection has failed, do not mark initTmuxCall as false since tmux will have aborted.
-    # We'll need to try to start a new tmux session for the next host.
-    if (( $(tmux ls 2> /dev/null | grep "${TMUX_SESSION_NAME}" | wc -l) > 0 )) ; then
-		  initTmuxCall="false"
-    fi
-	else
     tmux split-window -t "${TMUX_SESSION_NAME}" "${connectString}" && \
     tmux select-layout -t "${TMUX_SESSION_NAME}" "${TMUX_LAYOUT}"
-	fi
 done
 
 unset IFS
@@ -313,4 +304,4 @@ fi
 synchronizePanes ${SYNCHRONIZE_PANES} ${TMUX_SESSION_NAME}
 
 # Attach to tmux session
-tmux attach-session -t "${TMUX_SESSION_NAME}"
+# tmux attach-session -t "${TMUX_SESSION_NAME}"
