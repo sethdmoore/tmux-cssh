@@ -243,9 +243,11 @@ initTmuxCall="true"
 
 # Walk through hosts
 IFS=","
+COMMAND_PANE="$(tmux display-message -p '#D')"
+COMMAND_WINDOW="$(tmux display-message -p '#{window_id}')"
+echo $COMMAND_WINDOW
 
 for host in ${HOSTS[@]}; do
-    echo "hi"
 	connectString=""
 	hostname=""
 	port=""
@@ -288,9 +290,20 @@ for host in ${HOSTS[@]}; do
 	# Output
 	output "* Connecting '${connectString}'"
 
-    tmux split-window -t "${TMUX_SESSION_NAME}" "${connectString}" && \
-    tmux select-layout -t "${TMUX_SESSION_NAME}" "${TMUX_LAYOUT}"
+    if [ -z "${targetWindow}" ]; then
+        targetWindow="$(tmux new-window -d -P ${connectString})"
+        layoutWindow="$(echo ${targetWindow} | sed -e 's/.*://g' -e 's/\..*//g')"
+        echo $layoutWindow
+    else
+        tmux select-pane -t "${COMMAND_PANE}"
+        tmux split-window -t "${targetWindow}" "${connectString}" && \
+        tmux select-window -t "${COMMAND_WINDOW}"
+        tmux select-layout -t "${layoutWindow}" "${TMUX_LAYOUT}"
+    fi
+
 done
+
+tmux select-window -t "${layoutWindow}"
 
 unset IFS
 
