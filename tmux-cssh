@@ -245,7 +245,7 @@ initTmuxCall="true"
 IFS=","
 COMMAND_PANE="$(tmux display-message -p '#D')"
 COMMAND_WINDOW="$(tmux display-message -p '#{window_id}')"
-echo $COMMAND_WINDOW
+# echo $COMMAND_WINDOW
 
 for host in ${HOSTS[@]}; do
 	connectString=""
@@ -293,7 +293,7 @@ for host in ${HOSTS[@]}; do
     if [ -z "${targetWindow}" ]; then
         targetWindow="$(tmux new-window -d -P ${connectString})"
         layoutWindow="$(echo ${targetWindow} | sed -e 's/.*://g' -e 's/\..*//g')"
-        echo $layoutWindow
+        # echo $layoutWindow
     else
         tmux select-pane -t "${COMMAND_PANE}"
         tmux split-window -t "${targetWindow}" "${connectString}" && \
